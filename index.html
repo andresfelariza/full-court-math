@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Full-Court Math – Championship Season</title><link rel="stylesheet" href="quest.css">
+<style>body{background:linear-gradient(170deg,#3a1d0b,#120a05 75%);color:#fff4e8}.card{background:#ffffff10;border:1px solid #9fb4ff33}
+button{background:#f97316;color:#fff}button.alt,.opt,.path{background:#ffffff1a;color:#fff4e8}button.go{background:#2ee6a6;color:#032}
+.prog>div{background:linear-gradient(90deg,#f97316,#facc15)}.steps{background:#0006;font-family:ui-monospace,monospace}.eqbox{background:#ffffff14}
+.donep{opacity:.6}svg text{fill:#fff4e8;font:14px system-ui}svg .ln{stroke:#facc15;stroke-width:3;fill:none}svg .sh{fill:#c2742a66;stroke:#facc15;stroke-width:3}</style></head>
+<body><div class="wrap"><h1>🏀 Full-Court Math</h1><div id="ctl" class="card small"></div><div id="app"></div></div>
+<script src="tracker.js"></script><script src="quest-engine.js"></script><script>
+const MC=o=>Object.assign({type:'mc'},o),NUM=o=>Object.assign({type:'num'},o),STEPS=o=>Object.assign({type:'steps'},o);
+const MOVE=(eq,opts,a,res,why,q)=>({eq,opts,a,res,why,q});
+const OUTCOME=['x = 0 (one solution)','No solution','Infinitely many solutions'];
+const L_SHAPE=`<svg class="fig" viewBox="-40 -25 260 175" width="300"><polygon class="sh" points="0,0 105,0 105,45 180,45 180,120 0,120"/>
+<text x="75" y="140">12 m</text><text x="-36" y="65">8 m</text><text x="128" y="64">5 m</text><text x="112" y="28">3 m</text><text x="40" y="-8">(not to scale)</text></svg>`;
+const XLINES=`<svg class="fig" viewBox="0 0 220 140" width="260"><line class="ln" x1="20" y1="20" x2="200" y2="120"/><line class="ln" x1="20" y1="120" x2="200" y2="20"/>
+<text x="92" y="40">(2x + 10)°</text><text x="98" y="112">74°</text></svg>`;
+const PARALLEL=`<svg class="fig" viewBox="0 0 240 150" width="280"><line class="ln" x1="10" y1="40" x2="230" y2="40"/><line class="ln" x1="10" y1="100" x2="230" y2="100"/>
+<line class="ln" x1="50" y1="140" x2="190" y2="0"/><text x="158" y="62">115°</text><text x="104" y="92">?</text><text x="200" y="35">a</text><text x="200" y="95">b</text><text x="10" y="148" style="font-size:11px">lines a ∥ b, not to scale</text></svg>`;
+QuestEngine.start({game:'full-court-math',defaultPlayer:'Sebastian',emoji:'🏆',unit:'plays',confBonus:true,
+title:'Championship Season',
+story:'You\'re the star player AND player-coach of the Fowler Falcons, and the championship is coming. In the Film Room, break down game tape and fix the plays one move at a time. Every equation move has to be right or the play falls apart. On Court Design, map out passing lanes, angles, and the practice court. Pick where to start, Coach!',
+strategy:`<p><b>⭐ Confidence = calling your shot</b></p><p>Before each check, you rate your confidence. There's no default, so you must pick. Great players know when a shot is a lock and when it's a heave.</p>
+<ul><li>😎 Sure + right → +5 “Called it!” bonus</li><li>😬 Guessing + not yet → +3 honesty bonus</li><li>🙂 Kinda sure → no bonus. Be honest, not safe!</li></ul>
+<p>Each zone has its own playbook card. You'll see it when you enter. Tap 📇 anytime to see them again.</p>`,
+hubTitle:'📋 Pick your practice',hubHint:'Your call, Coach. Finish both zones to win the championship.',
+paths:[
+{id:'fixit',emoji:'🎬',name:'Film Room: Fix the Play',desc:'Break down variables-on-both-sides equations one move at a time, plus the x = 0 trap.',doneMsg:'Plays fixed. The team is locked in!',
+strategy:`<p><b>Film Room Playbook: The Balance Rule ⚖️</b></p><ol><li><b>Gather the variables.</b> Do the OPPOSITE of the smaller variable term to BOTH sides. If you see −2r, <b>add 2r</b>; if you see +3x, <b>subtract 3x</b>.</li>
+<li><b>Gather the numbers.</b> Do the opposite of the number next to the variable term, to both sides.</li><li><b>Divide</b> by the number in front of the variable.</li><li><b>Check</b> by plugging in. Both sides must match.</li></ol>
+<p>🚫 Never “move” a term without changing it: what you do to one side, you do to the other.</p>
+<p><b>Outcome decoder:</b> after gathering the variables…<br>• a variable is left (4x = 0) → <b>one solution</b>, even if it's <b>x = 0</b>!<br>• variables vanish, false (−3 = 1) → <b>no solution</b><br>• variables vanish, true (−4 = −4) → <b>infinitely many</b></p>`,
+items:[
+STEPS({id:'f1',skill:'vars-both-sides-moves',label:'Play 1',q:'Solve 20 + 5r = 62 − 2r one move at a time.',h:'The −2r is on the right. What undoes subtracting 2r?',s:'20 + 5r = 62 − 2r\n20 + 7r = 62 (add 2r to both sides)\n7r = 42 (subtract 20 from both sides)\nr = 6 (divide by 7)\nCheck: 20 + 30 = 50 and 62 − 12 = 50 ✓',steps:[
+MOVE('20 + 5r = 62 − 2r',['Add 2r to both sides','Subtract 2r from both sides','Add 5r to both sides','Subtract 62 from the left side only'],0,'20 + 7r = 62','Adding 2r cancels the −2r on the right and makes 5r + 2r = 7r on the left.'),
+MOVE('20 + 7r = 62',['Add 20 to both sides','Subtract 20 from both sides','Divide both sides by 20','Subtract 7 from both sides'],1,'7r = 42','The 20 is being ADDED to 7r, so subtract 20 from both sides: 62 − 20 = 42.'),
+MOVE('7r = 42',['Subtract 7 from both sides','Multiply both sides by 7','Divide both sides by 7','Divide both sides by 42'],2,'r = 6','7r means 7 × r, so divide both sides by 7: 42 ÷ 7 = 6.'),
+MOVE('r = 6',['20 + 5(6) = 50 and 62 − 2(6) = 50 ✓','20 + 5 + 6 = 31 and 62 − 2 − 6 = 54','5(6) = 30 and 2(6) = 12','No check needed'],0,'',"Check by plugging 6 into BOTH original sides: 20 + 30 = 50 and 62 − 12 = 50.",'Which check proves r = 6 is right?')]}),
+STEPS({id:'f2',skill:'vars-both-sides-moves',label:'Play 2',q:'Solve 3x + 14 = 7x − 2 one move at a time.',h:'Subtract the SMALLER x-term (3x) so x stays positive.',s:'3x + 14 = 7x − 2\n14 = 4x − 2 (subtract 3x)\n16 = 4x (add 2)\nx = 4 (divide by 4)\nCheck: 12 + 14 = 26 and 28 − 2 = 26 ✓',steps:[
+MOVE('3x + 14 = 7x − 2',['Add 3x to both sides','Subtract 3x from both sides','Subtract 14 from the right side only','Divide both sides by 3'],1,'14 = 4x − 2','Subtracting 3x removes it from the left and leaves 7x − 3x = 4x on the right.'),
+MOVE('14 = 4x − 2',['Add 2 to both sides','Subtract 2 from both sides','Add 14 to both sides','Divide both sides by 2'],0,'16 = 4x','The 2 is SUBTRACTED, so add 2 to both sides: 14 + 2 = 16.'),
+MOVE('16 = 4x',['Subtract 4 from both sides','Divide both sides by 4','Multiply both sides by 4','Divide both sides by 16'],1,'x = 4','4x means 4 × x, so divide by 4: 16 ÷ 4 = 4.')]}),
+STEPS({id:'f3',skill:'vars-both-sides-negative',label:'Play 3',q:'Solve 9 − 4n = 2n − 15 one move at a time.',h:'The −4n is on the left. Add 4n to both sides.',s:'9 − 4n = 2n − 15\n9 = 6n − 15 (add 4n)\n24 = 6n (add 15)\nn = 4 (divide by 6)\nCheck: 9 − 16 = −7 and 8 − 15 = −7 ✓',steps:[
+MOVE('9 − 4n = 2n − 15',['Subtract 4n from both sides','Add 4n to both sides','Add 2n to both sides','Subtract 9 from the left side only'],1,'9 = 6n − 15','Adding 4n cancels −4n on the left and gives 2n + 4n = 6n on the right. (Subtracting 4n would make it −8n.)'),
+MOVE('9 = 6n − 15',['Subtract 15 from both sides','Add 15 to both sides','Add 9 to both sides','Divide both sides by 15'],1,'24 = 6n','The 15 is SUBTRACTED, so add 15 to both sides: 9 + 15 = 24.'),
+MOVE('24 = 6n',['Divide both sides by 6','Subtract 6 from both sides','Multiply both sides by 6','Divide both sides by 24'],0,'n = 4','24 ÷ 6 = 4.')]}),
+NUM({id:'f4',skill:'vars-both-sides',label:'Play 4 · Solo',q:'Your fan section has 6 fans and grows by 3 fans per minute. The visitors\' section has 30 fans and shrinks by 5 per minute as they head home. Solve 6 + 3k = 30 − 5k to find when the sections are equal (k minutes).',a:'3',h:'Use the Balance Rule: add 5k to both sides first.',s:'6 + 8k = 30 (add 5k)\n8k = 24 (subtract 6)\nk = 3 minutes\nCheck: 6 + 9 = 15 and 30 − 15 = 15 ✓'}),
+STEPS({id:'f5',skill:'x-zero-vs-no-solution',label:'Replay 5 · Explain',q:'Diagnose 9x + 5 = 2x + 5.',h:'Subtract 2x from both sides. Is there still an x?',s:'9x + 5 = 2x + 5\n7x + 5 = 5 (subtract 2x)\n7x = 0 → x = 0\nOne solution: zero is a real answer! It is NOT “no solution.”',steps:[
+MOVE('9x + 5 = 2x + 5',OUTCOME,0,'x = 0','The x-coefficients are different (9 and 2), so the x\'s don\'t cancel: 7x = 0 → x = 0.','How many solutions?'),
+MOVE('9x + 5 = 2x + 5',['Subtracting 2x gives 7x + 5 = 5, so 7x = 0 and x = 0. The x\'s didn\'t cancel.','The numbers (5 and 5) match, so there is no solution.','Both sides have + 5, so they are always equal.','0 means nothing, so there is no answer.'],0,'','Same constants do NOT mean no solution. Look at the x-coefficients first.','Why? Pick the best explanation.')]}),
+STEPS({id:'f6',skill:'special-solutions',label:'Replay 6 · Explain',q:'Diagnose 4(x − 1) = 4x − 4.',h:'Distribute first, then compare both sides.',s:'4(x − 1) = 4x − 4\n4x − 4 = 4x − 4 (distribute)\n−4 = −4 (subtract 4x) → always true\nInfinitely many solutions',steps:[
+MOVE('4(x − 1) = 4x − 4',OUTCOME,2,'infinitely many','Distributing gives 4x − 4 = 4x − 4. Both sides are identical.','How many solutions?'),
+MOVE('4(x − 1) = 4x − 4',['After distributing, both sides are 4x − 4, so subtracting 4x leaves −4 = −4, which is always true.','The x\'s cancel, so the answer is x = 0.','The x\'s cancel, so there is no solution.','4 and 4 are equal, so x = 4.'],0,'','When the x\'s cancel, look at what\'s left: true → infinitely many, false → none.','Why? Pick the best explanation.')]})]},
+{id:'geometry',emoji:'🏀',name:'Court Design: Angles & Areas',desc:'Passing-lane angles, court lines, and composite court area/perimeter.',doneMsg:'Court designed. Game on!',
+strategy:`<p><b>Court Design Playbook: The Angle Toolkit 📐</b> Name the relationship FIRST, then write the equation.</p><ul>
+<li><b>Straight line / supplementary:</b> add to 180°</li><li><b>Vertical angles</b> (across an X): equal</li><li><b>Triangle:</b> three angles add to 180°</li>
+<li><b>Parallel lines + transversal:</b> corresponding and alternate interior angles are <b>equal</b>; same-side interior angles add to <b>180°</b></li></ul>
+<p><b>Composite figures 🧩</b> Split it or subtract it: area = big rectangle − missing piece (or add the pieces). Perimeter = walk the whole outside edge and add every side.</p>`,
+items:[
+NUM({id:'g1',skill:'supplementary',label:'Court 1',q:'A player cuts off the sideline (a straight line), making two angles. One is 128°. What is the other angle (in degrees)?',a:'52',h:'Angles on a straight line add to 180°.',s:'180 − 128 = 52°'}),
+NUM({id:'g2',skill:'vertical-angles-algebra',label:'Court 2',ctx:XLINES,q:'Two passing lanes cross like an X. The vertical angles are 74° and (2x + 10)°. Find x.',a:'32',h:'Vertical angles are equal: 2x + 10 = 74.',s:'2x + 10 = 74\n2x = 64 → x = 32\nCheck: 2(32) + 10 = 74 ✓'}),
+NUM({id:'g3',skill:'triangle-sum',label:'Court 3',q:'Three teammates run a triangle passing drill. Two angles of the triangle are 47° and 71°. What is the third angle (in degrees)?',a:'62',h:'The three angles of a triangle add to 180°.',s:'47 + 71 = 118\n180 − 118 = 62°'}),
+NUM({id:'g4',skill:'parallel-lines',label:'Court 4',ctx:PARALLEL,q:'Court lines a and b are parallel, and a cross-court pass cuts across them (a transversal). The 115° angle and the “?” angle are same-side interior angles (both between the lines, on the same side of the pass). What is the “?” angle?',a:'65',h:'Same-side interior angles are supplementary (add to 180°).',s:'180 − 115 = 65°'}),
+NUM({id:'g5',skill:'parallel-lines-algebra',label:'Court 5',q:'The two parallel baselines are cut by a long outlet pass (a transversal). A pair of alternate interior angles measure (5x − 20)° and (3x + 30)°. Find x.',a:'25',h:'Alternate interior angles are equal. Then use the Balance Rule!',s:'5x − 20 = 3x + 30\n2x − 20 = 30 (subtract 3x)\n2x = 50 → x = 25\nCheck: both angles are 105° ✓'}),
+NUM({id:'g6',skill:'supplementary-algebra',label:'Court 6',q:'Two angles along the half-court line are supplementary. One is (4x + 15)° and the other is (2x + 45)°. Find x.',a:'20',h:'Add them and set the sum equal to 180.',s:'4x + 15 + 2x + 45 = 180\n6x + 60 = 180\n6x = 120 → x = 20\nCheck: 95° + 85° = 180° ✓'}),
+NUM({id:'g7',skill:'composite-area',label:'Court 7',ctx:L_SHAPE,q:'The practice court is a 12 m × 8 m rectangle with a 5 m × 3 m corner cut out for the team bench. What is the court\'s AREA in square meters?',a:'81',h:'Big rectangle minus the missing corner.',s:'12 × 8 = 96\n5 × 3 = 15\n96 − 15 = 81 m²'}),
+NUM({id:'g8',skill:'composite-perimeter',label:'Court 8',ctx:L_SHAPE,q:'Same practice court. How many meters of boundary tape go around its whole edge (PERIMETER)? (Hint: find the two missing side lengths first.)',a:'40',h:'Top edge = 12 − 5 = 7. Right edge = 8 − 3 = 5. Now walk all 6 sides.',s:'Sides: 12 + 8 + 7 + 3 + 5 + 5 = 40 m\n(Fun fact: it\'s the same as the full rectangle, 2(12 + 8) = 40!)'})]}],
+reflectChips:['The Balance Rule','Gather variables first','Checking by plugging in','Outcome decoder','Naming the angle relationship','Split or subtract'],
+reflectQ:'Which strategy helped you most today, and why?',askTutorName:true,winMsg:'CHAMPIONS! The Falcons win the title! 🏆'});
+</script></body></html>
